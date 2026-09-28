@@ -1,0 +1,20 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="Serialisation and Replication/common/SocketAddress.h" />
+    <File Path="Serialisation and Replication/common/SocketAddressFactory.cpp" />
+    <File Path="Serialisation and Replication/common/SocketAddressFactory.h" />
+    <File Path="Serialisation and Replication/common/SocketUtil.cpp" />
+    <File Path="Serialisation and Replication/common/SocketUtil.h" />
+    <File Path="Serialisation and Replication/common/StringUtils.cpp" />
+    <File Path="Serialisation and Replication/common/StringUtils.h" />
+    <File Path="Serialisation and Replication/common/TCPSocket.cpp" />
+    <File Path="Serialisation and Replication/common/TCPSocket.h" />
+    <File Path="Serialisation and Replication/common/UDPSocket.cpp" />
+    <File Path="Serialisation and Replication/common/UDPSocket.h" />
+  </Folder>
+  <Project Path="Serialisation and Replication/Serialisation and Replication.vcxproj" />
+</Solution>
