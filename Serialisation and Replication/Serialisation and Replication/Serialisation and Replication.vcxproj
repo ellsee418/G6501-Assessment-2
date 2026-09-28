@@ -141,12 +141,14 @@
   <ItemGroup>
     <ClCompile Include="InputMemoryStream.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjectCreationRegistry.cpp" />
     <ClCompile Include="OutputMemoryStream.cpp" />
     <ClCompile Include="PlayerState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common_util.hpp" />
     <ClInclude Include="InputMemoryStream.h" />
+    <ClInclude Include="ObjectCreationRegistry.h" />
     <ClInclude Include="OutputMemoryStream.h" />
     <ClInclude Include="PlayerState.h" />
   </ItemGroup>

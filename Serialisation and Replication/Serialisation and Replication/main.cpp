@@ -1,22 +1,25 @@
 #include <iostream>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <vector>
+
 #include "OutputMemoryStream.h"
 #include "InputMemoryStream.h"
 #include "PlayerState.h"
+#include "ObjectCreationRegistry.h"
 
+#pragma comment(lib, "Ws2_32.lib")
+
+bool SendPacket(SOCKET sock, const char* data, size_t length);
+bool TryExtractPacket(std::vector<char>& inBuf, std::vector<char>& outPacket);
 
 int main()
 {
-	PlayerState p1(120.5f, 40.0f, 75);
-	OutputMemoryStream out;
-	p1.Serialize(out);
-	std::vector<char> bytes(out.GetBufferPtr(), out.GetBufferPtr() + out.GetLength());
-
-	InputMemoryStream in(bytes);
-	PlayerState p2;
-	p2.Deserialize(in);
-	std::cout << p2.X() << " " << p2.Y() << " " << p2.Health() << "\n"; // 120.5 40 75
+	RegisterAllClasses();
+	auto obj = CreateByClassId(1);
+	std::cout << (obj ? "created!" : "unknown class") << "\n"; // created!
+	auto unknown = CreateByClassId(999);
+	std::cout << (unknown ? "created!" : "unknown class") << "\n"; // unknown class
 }
 
 bool SendPacket(SOCKET sock, const char* data, size_t length)
@@ -45,5 +48,9 @@ bool TryExtractPacket(std::vector<char>& inBuf, std::vector<char>& outPacket)
 
 	size_t totalNeeded = 4 + length;
 	if (inBuf.size() < totalNeeded) return false; // payload still incomplete
+
+	outPacket.assign(inBuf.begin() + 4, inBuf.begin() + totalNeeded);
+	inBuf.erase(inBuf.begin(), inBuf.begin() + totalNeeded);
+	return true;
 }
 
