@@ -104,24 +104,11 @@ void Server::ChatLoop()
 
 			if (newClient.GetSocket() != INVALID_SOCKET)
 			{
-				char buffer[512];
-				int n = recv(newClient.GetSocket(), buffer, sizeof(buffer), 0);
-				std::string newUsername(buffer, n);
-				newClient.SetName(newUsername);
-
 				u_long mode = 1;
 				ioctlsocket(newClient.GetSocket(), FIONBIO, &mode);
 
-
-				std::cout << serverPrefix << "New connection from [" << newClient.GetIp() << ":"
-					<< newClient.GetClientPort() << "] registered as: [" << newClient.GetName() << "]\n";
-
-				std::string clientJoined = newClient.GetName() + " joined the server!\n";
-				for (size_t j = 0; j < clients.size(); j++)
-				{
-					send(clients[j].GetSocket(), clientJoined.c_str(), (int)clientJoined.size(), 0);
-				}
-
+				std::cout << serverPrefix << "New connection from [" << newClient.GetIp() << 
+					":" << newClient.GetClientPort() << "]\n";
 				clients.push_back(newClient);
 			}
 		}

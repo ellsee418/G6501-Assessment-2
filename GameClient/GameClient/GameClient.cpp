@@ -14,12 +14,12 @@ int main(int argc, char* argv[])
 		std::cout << "Please specify an ip and port number.\n";
 		// return -1;
 		ip = "127.0.0.1";
-		port = 500;//default for debug
+		port = 5000;//default for debug
 	}
 	else
 	{
 		std::string ip = argv[1];
-		int port = std::stoi(argv[2]);
+		port = std::stoi(argv[2]);
 	}
 
 	Client client(ip, port);

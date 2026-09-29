@@ -47,10 +47,6 @@ void Client::RunClient()
 
 void Client::ConnectToServer()
 {
-	std::cout << "Enter a username: ";// will ignore spaces
-	std::string username;
-	std::cin >> username;
-
 	if (connect(sock, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
 	{
 		std::cout << "connect() failed: " << WSAGetLastError() << "\n";
@@ -58,7 +54,6 @@ void Client::ConnectToServer()
 		WSACleanup();
 		return;
 	}
-	send(sock, username.c_str(), (int)username.length(), 0);// send username to server
 	std::cout << "[CLIENT] Connected to the server!\n";
 
 	u_long mode = 1;
