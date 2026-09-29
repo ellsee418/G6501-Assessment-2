@@ -7,6 +7,7 @@
 #include "InputMemoryStream.h"
 #include "PlayerState.h"
 #include "ObjectCreationRegistry.h"
+#include "LinkingContext.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -15,11 +16,18 @@ bool TryExtractPacket(std::vector<char>& inBuf, std::vector<char>& outPacket);
 
 int main()
 {
+	LinkingContext context;
 	RegisterAllClasses();
-	auto obj = CreateByClassId(1);
-	std::cout << (obj ? "created!" : "unknown class") << "\n"; // created!
-	auto unknown = CreateByClassId(999);
-	std::cout << (unknown ? "created!" : "unknown class") << "\n"; // unknown class
+	// First time NetworkID 1 shows up: nothing to find, so create + link it.
+	PlayerState* p = context.GetEntity(1);
+	if (p == nullptr) 
+	{
+		p = context.AddEntity(1, CreateByClassId(1));
+	}
+	std::cout << "linked entities: " << context.Count() << "\n"; // 1
+	// Next update for the SAME NetworkID: found immediately, no creation at all.
+	PlayerState* sameOne = context.GetEntity(1);
+	std::cout << (sameOne == p ? "same object!" : "different object") << "\n"; // same object!
 }
 
 bool SendPacket(SOCKET sock, const char* data, size_t length)

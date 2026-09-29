@@ -16,5 +16,5 @@
     <File Path="Serialisation and Replication/common/UDPSocket.cpp" />
     <File Path="Serialisation and Replication/common/UDPSocket.h" />
   </Folder>
-  <Project Path="Serialisation and Replication/Serialisation and Replication.vcxproj" />
+  <Project Path="Serialisation and Replication/Serialisation and Replication.vcxproj" Id="498a41be-be0e-44a8-aea3-cbd8dc6dc11f" />
 </Solution>
