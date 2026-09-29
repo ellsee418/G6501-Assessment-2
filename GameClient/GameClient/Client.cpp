@@ -1,9 +1,13 @@
 #include "Client.h"
+#include "network/PacketManagement.hpp"
+#include "network/InputMemoryStream.h"
+
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iostream>
 #include <string>
 #include <conio.h>
+#include <vector>
 
 Client::Client(std::string ip, int port)
 {
@@ -63,47 +67,25 @@ void Client::ConnectToServer()
 
 void Client::ChatLoop()
 {
-	std::string inputBuffer;
+	std::vector<char> inBuf, packet;
 	while (true)
 	{
 		// check socket - non blocking
 		char buf[512];
 		int n = recv(sock, buf, sizeof(buf), 0);
 
-		if (n > 0)
-		{
-			if (inputBuffer.size() > 0)
-			{
-				for (int i = 0; i < inputBuffer.size(); i++)
-				{
-					std::cout << "\b";
-				}
-			}
-			std::cout << std::string(buf, n) << inputBuffer;
+		if (n > 0) inBuf.insert(inBuf.end(), buf, buf + n);
 
+		while (TryExtractPacket(inBuf, packet))
+		{
+			InputMemoryStream in(packet);
+			uint8_t packetType;
+			uint32_t networkID, classID;
+			float x;//data
+			in.Read(packetType); in.Read(networkID); in.Read(classID); in.Read(x);
+			std::cout << "Entity " << networkID << ": x=" << x << "\n";
+		}
 
-		}
-		else if (n == 0 || WSAGetLastError() == 10054)//error code for server disconnect
-		{
-			std::cout << "Server disconnected.\n";
-			break;
-		}
-		else
-		{
-			if (WSAGetLastError() != WSAEWOULDBLOCK)
-			{
-				std::cout << "recv error: \n";
-				break;
-			}
-		}
-		//check the keyboard - non blocking, one char at a time
-		std::string line;
-		if (PollKeyboardNonBlocking(inputBuffer, line))
-		{
-			send(sock, line.c_str(), (int)line.size(), 0);
-			if (line == "/quit") break;
-		}
-		Sleep(10);
 	}
 }
 

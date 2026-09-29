@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\network">
+      <UniqueIdentifier>{bbb136cb-c8a5-4f28-b89c-37d0d9522d94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">
@@ -21,10 +24,43 @@
     <ClCompile Include="GameClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="network\InputMemoryStream.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\LinkingContext.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\ObjectCreationRegistry.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\OutputMemoryStream.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
+    <ClCompile Include="network\PlayerState.cpp">
+      <Filter>Source Files\network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="network\InputMemoryStream.h">
+      <Filter>Source Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\LinkingContext.h">
+      <Filter>Source Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\ObjectCreationRegistry.h">
+      <Filter>Source Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\OutputMemoryStream.h">
+      <Filter>Source Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\PacketManagement.hpp">
+      <Filter>Source Files\network</Filter>
+    </ClInclude>
+    <ClInclude Include="network\PlayerState.h">
+      <Filter>Source Files\network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

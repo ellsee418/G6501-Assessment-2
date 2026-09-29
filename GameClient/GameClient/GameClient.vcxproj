@@ -129,9 +129,20 @@
   <ItemGroup>
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="GameClient.cpp" />
+    <ClCompile Include="network\InputMemoryStream.cpp" />
+    <ClCompile Include="network\LinkingContext.cpp" />
+    <ClCompile Include="network\ObjectCreationRegistry.cpp" />
+    <ClCompile Include="network\OutputMemoryStream.cpp" />
+    <ClCompile Include="network\PlayerState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h" />
+    <ClInclude Include="network\InputMemoryStream.h" />
+    <ClInclude Include="network\LinkingContext.h" />
+    <ClInclude Include="network\ObjectCreationRegistry.h" />
+    <ClInclude Include="network\OutputMemoryStream.h" />
+    <ClInclude Include="network\PacketManagement.hpp" />
+    <ClInclude Include="network\PlayerState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
