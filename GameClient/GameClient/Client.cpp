@@ -70,6 +70,12 @@ void Client::ChatLoop()
 		int n = recv(sock, buf, sizeof(buf), 0);
 
 		if (n > 0) inBuf.insert(inBuf.end(), buf, buf + n);
+	
+		else if (n == 0 || WSAGetLastError() == 10054)//error code for server disconnect
+		{
+			std::cout << "Server disconnected.\n";
+			break;
+		}
 
 		while (TryExtractPacket(inBuf, packet))
 		{
