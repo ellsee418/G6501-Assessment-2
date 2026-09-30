@@ -115,7 +115,7 @@ void Server::ChatLoop()
 
 		//new shit
 		auto now = std::chrono::steady_clock::now();
-		auto dt = (now - lastSnapshot);
+		auto dt = std::chrono::duration<float>(now - lastSnapshot);
 		x += velocity * dt.count();
 
 		if (x < 0.0f || x > 400.0f) velocity = -velocity;
@@ -158,10 +158,7 @@ void Server::ChatLoop()
 				clients.erase(clients.begin() + i);
 				i--;
 			}
-
 		}
-		
-
 	}
 }
 
