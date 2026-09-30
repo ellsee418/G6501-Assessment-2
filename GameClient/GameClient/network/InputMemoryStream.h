@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstring>
 #include <cstdint>
+
 class InputMemoryStream
 {
 public:

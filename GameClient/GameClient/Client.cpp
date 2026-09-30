@@ -1,6 +1,4 @@
 #include "Client.h"
-#include "network/PacketManagement.hpp"
-#include "network/InputMemoryStream.h"
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -9,7 +7,12 @@
 #include <conio.h>
 #include <vector>
 
-Client::Client(std::string ip, int port)
+#include "network/PacketManagement.hpp"
+#include "network/InputMemoryStream.h"
+
+#pragma comment(lib, "Ws2_32.lib")
+
+Client::Client(std::string ip, int port) : lastX(0.0f), window(sf::VideoMode({800, 600}), "Replicated Entity") 
 {
 	InitWinsock();
 	InitSocket(ip, port);
@@ -41,7 +44,10 @@ void Client::InitSocket(std::string ip, int port)
 void Client::RunClient()
 {
 	ConnectToServer();
-	ChatLoop();
+
+	window.setFramerateLimit(60);
+
+	ClientLoop();
 	CleanupWinsock();
 }
 
@@ -60,11 +66,15 @@ void Client::ConnectToServer()
 	ioctlsocket(sock, FIONBIO, &mode);// set socket to non blocking
 }
 
-void Client::ChatLoop()
+void Client::ClientLoop()
 {
 	std::vector<char> inBuf, packet;
-	while (true)
+	while (window.isOpen())
 	{
+		sf::Event event;
+		while (window.pollEvent(event)) if (event.type == sf::Event::Closed) window.close();
+
+
 		// check socket - non blocking
 		char buf[512];
 		int n = recv(sock, buf, sizeof(buf), 0);
@@ -84,8 +94,15 @@ void Client::ChatLoop()
 			uint32_t networkID, classID;
 			float x;//data
 			in.Read(packetType); in.Read(networkID); in.Read(classID); in.Read(x);
-			std::cout << "Entity " << networkID << ": x=" << x << "\n";
+			lastX = x;
 		}
+
+		window.clear(sf::Color(30, 20, 40));
+		sf::CircleShape shape(15.0f);
+		shape.setFillColor(sf::Color::White);
+		shape.setPosition(lastX, 90.0f);
+		window.draw(shape);
+		window.display();
 
 	}
 }

@@ -86,7 +86,7 @@ void Server::ChatLoop()
 
 		timeval timeout{ 1,0 };
 		int ready = select(0, &readSet, nullptr, nullptr, &timeout);
-		//if (ready == 0) continue; // timeout, nothing ready this tick
+		//if (ready <= 0) continue; // timeout, nothing ready this tick
 
 		if (FD_ISSET(listenSocket, &readSet))
 		{

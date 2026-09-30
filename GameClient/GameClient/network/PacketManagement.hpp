@@ -3,7 +3,6 @@
 #include <ws2tcpip.h>
 #include <vector>
 
-#pragma comment(lib, "Ws2_32.lib")
 inline bool SendPacket(SOCKET sock, const char* data, size_t length)
 {
 	uint32_t networkLength = htonl((uint32_t)length);
