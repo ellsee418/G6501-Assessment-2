@@ -6,11 +6,15 @@
 #pragma comment(lib, "Ws2_32.lib")
 inline bool SendPacket(SOCKET sock, const char* data, size_t length)
 {
-	uint32_t networkLength = htons((uint32_t)length);
+	uint32_t networkLength = htonl((uint32_t)length);
 
 	// send 4-byte length first then payload
 	send(sock, (const char*)&networkLength, sizeof(networkLength), 0);
+
+	
+	// Data Only Payload 
 	size_t sent = 0;
+
 	while (sent < length)
 	{
 		int n = send(sock, data + sent, (int)(length - sent), 0);

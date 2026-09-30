@@ -86,7 +86,7 @@ void Server::ChatLoop()
 
 		timeval timeout{ 1,0 };
 		int ready = select(0, &readSet, nullptr, nullptr, &timeout);
-		if (ready <= 0) continue; // timeout, nothing ready this tick
+		//if (ready == 0) continue; // timeout, nothing ready this tick
 
 		if (FD_ISSET(listenSocket, &readSet))
 		{
@@ -113,6 +113,29 @@ void Server::ChatLoop()
 			}
 		}
 
+		//new shit
+		auto now = std::chrono::steady_clock::now();
+		auto dt = (now - lastSnapshot);
+		x += velocity * dt.count();
+
+		if (x < 0.0f || x > 400.0f) velocity = -velocity;
+
+		if (dt >= std::chrono::milliseconds(50))
+		{
+			lastSnapshot = now;
+			OutputMemoryStream out;
+			out.Write((uint8_t)1); // PacketType
+			out.Write((uint32_t)1); // NetworkID
+			out.Write((uint32_t)1); // ClassID
+			out.Write(x); // data
+			std::cout << "x: " << x << std::endl;
+			
+
+			for (auto& client : clients)
+				SendPacket(client.GetSocket(), out.GetBufferPtr(), out.GetLength());
+
+		}
+
 		for (size_t i = 0; i < clients.size(); i++)
 		{
 			SOCKET c = clients[i].GetSocket();
@@ -122,16 +145,7 @@ void Server::ChatLoop()
 			int n = recv(c, buffer, sizeof(buffer), 0);
 			if (n > 0)
 			{
-				std::string msg(buffer, n);
-				std::string completeMsg;
-				completeMsg = "[" + clients[i].GetName() + "]: " + msg + "\n";
-
-				for (size_t j = 0; j < clients.size(); j++)
-				{
-					if (j == i) continue;
-					send(clients[j].GetSocket(), completeMsg.c_str(), (int)completeMsg.size(), 0);
-				}
-				std::cout << completeMsg;
+				
 			}
 			else
 			{
@@ -146,24 +160,7 @@ void Server::ChatLoop()
 			}
 
 		}
-		//new shit
-		auto now = std::chrono::steady_clock::now();
-		auto dt = (now - lastSnapshot);
-		x += velocity * dt.count();
-
-		if (x < 0.0f || x > 400.0f) velocity = -velocity;
-
-		if (dt >= std::chrono::milliseconds(50))
-		{
-			lastSnapshot = now;
-			OutputMemoryStream out;
-			out.Write((uint32_t)1); // PacketType
-			out.Write((uint32_t)1); // NetworkID
-			out.Write((uint32_t)1); // ClassID
-			out.Write(x); // data
-			for (auto& client : clients)
-				SendPacket(client.GetSocket(), out.GetBufferPtr(), out.GetLength());
-		}
+		
 
 	}
 }

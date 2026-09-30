@@ -6,7 +6,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 inline bool SendPacket(SOCKET sock, const char* data, size_t length)
 {
-	uint32_t networkLength = htons((uint32_t)length);
+	uint32_t networkLength = htonl((uint32_t)length);
 
 	// send 4-byte length first then payload
 	send(sock, (const char*)&networkLength, sizeof(networkLength), 0);
@@ -22,8 +22,9 @@ inline bool SendPacket(SOCKET sock, const char* data, size_t length)
 
 inline bool TryExtractPacket(std::vector<char>& inBuf, std::vector<char>& outPacket)
 {
+	
 	if (inBuf.size() < 4) return false; // have not gotten length yet
-
+	
 	uint32_t networkLength;
 	memcpy(&networkLength, inBuf.data(), 4);
 	uint32_t length = ntohl(networkLength);
