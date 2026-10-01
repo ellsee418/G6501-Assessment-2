@@ -2,6 +2,9 @@
 #include "Client.h"
 #include "network/OutputMemoryStream.h"
 #include "network/PacketManagement.hpp"
+#include "network/LinkingContext.h"
+#include "network/ObjectCreationRegistry.h"
+#include "network/PlayerState.h"
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -77,6 +80,15 @@ void Server::AcceptConnections()
 
 void Server::ServerLoop()
 {
+	LinkingContext context;
+	RegisterAllClasses();
+
+	player = context.GetEntity(1);
+	if (player == nullptr)
+	{
+		player = context.AddEntity(1, CreateByClassId(1));
+	}
+
 	while (true)
 	{
 		fd_set readSet;
@@ -112,24 +124,22 @@ void Server::ServerLoop()
 				clients.push_back(newClient);
 			}
 		}
-
 		//new shit
 		auto now = std::chrono::steady_clock::now();
 		auto dt = std::chrono::duration<float>(now - lastSnapshot);
-		x += velocity * dt.count();
+		player->SetX(player->X() + (velocity * dt.count()));
+		player->SetY(player->Y() + (velocity * dt.count()));
 
-		if (x < 0.0f || x > 400.0f) velocity = -velocity;
+
+		if (player->X() < 0.0f || player->X() > 400.0f) velocity = -velocity;
 
 		if (dt >= std::chrono::milliseconds(10))
 		{
 			lastSnapshot = now;
 			OutputMemoryStream out;
-			out.Write((uint8_t)1); // PacketType
-			out.Write((uint32_t)1); // NetworkID
-			out.Write((uint32_t)1); // ClassID
-			out.Write(x); // data
-			std::cout << "x: " << x << std::endl;
-			
+			player->Serialize(out);
+
+			std::cout << "x: " << player->X() << " y: " << player->Y() << std::endl;
 
 			for (auto& client : clients)
 				SendPacket(client.GetSocket(), out.GetBufferPtr(), out.GetLength());
@@ -160,6 +170,11 @@ void Server::ServerLoop()
 			}
 		}
 	}
+}
+
+void Server::NetworkUpdate()
+{
+
 }
 
 void Server::CleanupWinsock()

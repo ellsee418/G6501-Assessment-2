@@ -15,4 +15,3 @@ void PlayerState::Deserialize(InputMemoryStream& in)
 	in.Read(mY);
 	in.Read(mHealth);
 }
-

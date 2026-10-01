@@ -9,6 +9,9 @@
 
 #include "network/PacketManagement.hpp"
 #include "network/InputMemoryStream.h"
+#include "network/LinkingContext.h"
+#include "network/ObjectCreationRegistry.h"
+#include "network/PlayerState.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -69,6 +72,15 @@ void Client::ConnectToServer()
 
 void Client::ClientLoop()
 {
+	LinkingContext context;
+	RegisterAllClasses();
+
+	player = context.GetEntity(1);
+	if (player == nullptr)
+	{
+		player = context.AddEntity(1, CreateByClassId(1));
+	}
+
 	std::vector<char> inBuf, packet;
 	while (window.isOpen())
 	{
@@ -91,17 +103,16 @@ void Client::ClientLoop()
 		while (TryExtractPacket(inBuf, packet))
 		{
 			InputMemoryStream in(packet);
-			uint8_t packetType;
-			uint32_t networkID, classID;
-			float x;//data
-			in.Read(packetType); in.Read(networkID); in.Read(classID); in.Read(x);
-			lastX = x;
+			player->Deserialize(in);
+			lastX = player->X();
+			lastY = player->Y();
+			std::cout << "x: " << player->X() << " y: " << player->Y() << std::endl;
 		}
 
 		window.clear(sf::Color(30, 20, 40));
 		sf::CircleShape shape(15.0f);
 		shape.setFillColor(sf::Color::White);
-		shape.setPosition(lastX, 90.0f);
+		shape.setPosition(lastX, lastY);
 		window.draw(shape);
 		window.display();
 

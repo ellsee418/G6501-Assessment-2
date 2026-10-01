@@ -9,6 +9,7 @@
 class listenServer;
 class sockaddr_in;
 class Client;
+class PlayerState;
 
 class Server
 {
@@ -24,6 +25,8 @@ public:
 	void ServerLoop();
 	void CleanupWinsock();
 
+	void NetworkUpdate();
+
 private:
 	WSADATA wsaData;
 	SOCKET listenSocket;
@@ -33,7 +36,7 @@ private:
 	int m_port;
 	float x, velocity;
 	std::chrono::time_point<std::chrono::steady_clock> lastSnapshot;
-	int m_currentID;
+	PlayerState* player;
 protected:
 
 };

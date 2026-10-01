@@ -1,7 +1,5 @@
 #include "ObjectCreationRegistry.h"
 
-#include "ObjectCreationRegistry.h"
-
 std::unordered_map<uint32_t, FactoryFn>& GetRegistry()
 {
     static std::unordered_map<uint32_t, FactoryFn> registry;

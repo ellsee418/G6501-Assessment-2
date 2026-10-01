@@ -9,6 +9,7 @@
 
 //#include <SFML/Graphics.hpp>
 
+class PlayerState;
 
 class Client
 {
@@ -27,8 +28,9 @@ private:
 	WSADATA wsaData;
 	SOCKET sock;
 	sockaddr_in serverAddr{};
-	float lastX;
+	float lastX, lastY;
 	sf::RenderWindow window;
+	PlayerState* player;
 protected:
 
 };

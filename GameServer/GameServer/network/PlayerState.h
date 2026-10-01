@@ -14,6 +14,9 @@ public:
 	float X() const { return mX; }
 	float Y() const { return mY; }
 	int Health() const { return mHealth; }
+	//this kinda doesnt make sense maybe?
+	void SetX(int x) { mX = x; }
+	void SetY(int y) { mY = y; }
 
 private:
 	float mX = 0.0f;
