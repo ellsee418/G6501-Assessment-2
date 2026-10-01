@@ -14,6 +14,8 @@
 
 Client::Client(std::string ip, int port) : lastX(0.0f), window(sf::VideoMode({800, 600}), "Replicated Entity") 
 {
+	window.setFramerateLimit(60);
+	std::cout << "[CLIENT] sfml window initialized.\n";
 	InitWinsock();
 	InitSocket(ip, port);
 	RunClient();
@@ -45,7 +47,6 @@ void Client::RunClient()
 {
 	ConnectToServer();
 
-	window.setFramerateLimit(60);
 
 	ClientLoop();
 	CleanupWinsock();

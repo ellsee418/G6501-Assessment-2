@@ -48,7 +48,7 @@ void Server::RunChatServer()
 {
 	BindSocket();
 	AcceptConnections();
-	ChatLoop();
+	ServerLoop();
 	CleanupWinsock();
 }
 
@@ -75,7 +75,7 @@ void Server::AcceptConnections()
 	std::cout << serverPrefix << "Server ready for clients on port " << m_port << "\n";
 }
 
-void Server::ChatLoop()
+void Server::ServerLoop()
 {
 	while (true)
 	{
@@ -120,7 +120,7 @@ void Server::ChatLoop()
 
 		if (x < 0.0f || x > 400.0f) velocity = -velocity;
 
-		if (dt >= std::chrono::milliseconds(50))
+		if (dt >= std::chrono::milliseconds(10))
 		{
 			lastSnapshot = now;
 			OutputMemoryStream out;

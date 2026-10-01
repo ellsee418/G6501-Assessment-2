@@ -21,7 +21,7 @@ public:
 	void RunChatServer();
 	int BindSocket();
 	void AcceptConnections();
-	void ChatLoop();
+	void ServerLoop();
 	void CleanupWinsock();
 
 private:
@@ -33,6 +33,7 @@ private:
 	int m_port;
 	float x, velocity;
 	std::chrono::time_point<std::chrono::steady_clock> lastSnapshot;
+	int m_currentID;
 protected:
 
 };
