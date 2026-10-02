@@ -49,10 +49,12 @@ int Server::InitListenSocket()
 
 void Server::RunChatServer()
 {
-	BindSocket();
-	AcceptConnections();
-	ServerLoop();
-	CleanupWinsock();
+	if (!BindSocket())
+	{
+		AcceptConnections();
+		ServerLoop();
+		CleanupWinsock();
+	}
 }
 
 int Server::BindSocket()
@@ -146,6 +148,7 @@ void Server::HandleConnects(fd_set& readSet)
 
 		if (newClient.GetSocket() != INVALID_SOCKET)
 		{
+
 			u_long mode = 1;
 			ioctlsocket(newClient.GetSocket(), FIONBIO, &mode);
 
