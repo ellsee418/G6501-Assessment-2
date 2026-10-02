@@ -20,6 +20,8 @@ public:
 	void RunClient();
 	void ConnectToServer();
 	void ClientLoop();
+	void ExtractPacketFromServer(std::vector<char>& inBuf, std::vector<char>& packet);
+	void Render();
 	void CleanupWinsock();
 
 	bool PollKeyboardNonBlocking(std::string& inputBuffer, std::string& outLine);

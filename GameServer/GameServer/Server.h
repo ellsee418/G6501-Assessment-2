@@ -26,6 +26,8 @@ public:
 	void CleanupWinsock();
 
 	void NetworkUpdate();
+	void HandleConnects(fd_set& readSet);
+	void HandleDisconnects(fd_set& readSet);
 
 private:
 	WSADATA wsaData;

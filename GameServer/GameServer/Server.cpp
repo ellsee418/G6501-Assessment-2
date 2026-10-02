@@ -100,81 +100,84 @@ void Server::ServerLoop()
 		int ready = select(0, &readSet, nullptr, nullptr, &timeout);
 		//if (ready <= 0) continue; // timeout, nothing ready this tick
 
-		if (FD_ISSET(listenSocket, &readSet))
-		{
-			Client newClient;
-			sockaddr_in clientAddr;
-			int clientAddrSize = sizeof(clientAddr);
-			newClient.SetSocket(accept(listenSocket,
-				(sockaddr*)&clientAddr, &clientAddrSize));
-
-			char ip[INET_ADDRSTRLEN];
-			inet_ntop(AF_INET, &clientAddr.sin_addr, ip, sizeof(ip));
-			newClient.SetIp(ip);
-			newClient.SetClientPort(ntohs(clientAddr.sin_port));
-
-
-			if (newClient.GetSocket() != INVALID_SOCKET)
-			{
-				u_long mode = 1;
-				ioctlsocket(newClient.GetSocket(), FIONBIO, &mode);
-
-				std::cout << serverPrefix << "New connection from [" << newClient.GetIp() << 
-					":" << newClient.GetClientPort() << "]\n";
-				clients.push_back(newClient);
-			}
-		}
-		//new shit
-		auto now = std::chrono::steady_clock::now();
-		auto dt = std::chrono::duration<float>(now - lastSnapshot);
-		player->SetX(player->X() + (velocity * dt.count()));
-		player->SetY(player->Y() + (velocity * dt.count()));
-
-
-		if (player->X() < 0.0f || player->X() > 400.0f) velocity = -velocity;
-
-		if (dt >= std::chrono::milliseconds(10))
-		{
-			lastSnapshot = now;
-			OutputMemoryStream out;
-			player->Serialize(out);
-
-			std::cout << "x: " << player->X() << " y: " << player->Y() << std::endl;
-
-			for (auto& client : clients)
-				SendPacket(client.GetSocket(), out.GetBufferPtr(), out.GetLength());
-
-		}
-
-		for (size_t i = 0; i < clients.size(); i++)
-		{
-			SOCKET c = clients[i].GetSocket();
-			if (!FD_ISSET(c, &readSet)) continue;
-
-			char buffer[512];
-			int n = recv(c, buffer, sizeof(buffer), 0);
-			if (n > 0)
-			{
-				
-			}
-			else
-			{
-				std::cout << serverPrefix  << " disconnected.\n";
-
-				closesocket(c);
-				std::string clientDisconnect = " disconnected.\n";
-				for (size_t j = 0; j < clients.size(); j++)
-					send(clients[j].GetSocket(), clientDisconnect.c_str(), (int)clientDisconnect.size(), 0);
-				clients.erase(clients.begin() + i);
-				i--;
-			}
-		}
+		HandleConnects(readSet);
+		NetworkUpdate();
+		HandleDisconnects(readSet);
 	}
 }
 
 void Server::NetworkUpdate()
 {
+	auto now = std::chrono::steady_clock::now();
+	auto dt = std::chrono::duration<float>(now - lastSnapshot);
 
+	// player movement code
+	player->SetX(player->X() + (velocity * dt.count()));
+	player->SetY(player->Y() + (velocity * dt.count()));
+	if (player->X() < 0.0f || player->X() > 400.0f) velocity = -velocity;
+
+	if (dt >= std::chrono::milliseconds(10))
+	{
+		lastSnapshot = now;
+		OutputMemoryStream out;
+		player->Serialize(out);
+
+		std::cout << "x: " << player->X() << " y: " << player->Y() << std::endl;
+
+		for (auto& client : clients)
+			SendPacket(client.GetSocket(), out.GetBufferPtr(), out.GetLength());
+	}
+}
+
+void Server::HandleConnects(fd_set& readSet)
+{
+	if (FD_ISSET(listenSocket, &readSet))
+	{
+		Client newClient;
+		sockaddr_in clientAddr;
+		int clientAddrSize = sizeof(clientAddr);
+		newClient.SetSocket(accept(listenSocket,
+			(sockaddr*)&clientAddr, &clientAddrSize));
+
+		char ip[INET_ADDRSTRLEN];
+		inet_ntop(AF_INET, &clientAddr.sin_addr, ip, sizeof(ip));
+		newClient.SetIp(ip);
+		newClient.SetClientPort(ntohs(clientAddr.sin_port));
+
+		if (newClient.GetSocket() != INVALID_SOCKET)
+		{
+			u_long mode = 1;
+			ioctlsocket(newClient.GetSocket(), FIONBIO, &mode);
+
+			std::cout << serverPrefix << "New connection from [" << newClient.GetIp() <<
+				":" << newClient.GetClientPort() << "]\n";
+			clients.push_back(newClient);
+		}
+	}
+}
+
+void Server::HandleDisconnects(fd_set& readSet)
+{
+	for (size_t i = 0; i < clients.size(); i++)
+	{
+		SOCKET c = clients[i].GetSocket();
+		if (!FD_ISSET(c, &readSet)) continue;
+
+		char buffer[512];
+		int n = recv(c, buffer, sizeof(buffer), 0);
+		if (n < 0)
+		{
+			std::cout << serverPrefix << " disconnected.\n";
+
+			closesocket(c);
+			std::string clientDisconnect = " disconnected.\n";
+			for (size_t j = 0; j < clients.size(); j++)
+				send(clients[j].GetSocket(), clientDisconnect.c_str(), (int)clientDisconnect.size(), 0);
+			clients.erase(clients.begin() + i);
+			i--;
+		}
+		else continue;
+	}
 }
 
 void Server::CleanupWinsock()

@@ -100,23 +100,31 @@ void Client::ClientLoop()
 			break;
 		}
 
-		while (TryExtractPacket(inBuf, packet))
-		{
-			InputMemoryStream in(packet);
-			player->Deserialize(in);
-			lastX = player->X();
-			lastY = player->Y();
-			std::cout << "x: " << player->X() << " y: " << player->Y() << std::endl;
-		}
-
-		window.clear(sf::Color(30, 20, 40));
-		sf::CircleShape shape(15.0f);
-		shape.setFillColor(sf::Color::White);
-		shape.setPosition(lastX, lastY);
-		window.draw(shape);
-		window.display();
-
+		ExtractPacketFromServer(inBuf, packet);
+		Render();
 	}
+}
+
+void Client::ExtractPacketFromServer(std::vector<char>& inBuf, std::vector<char>& packet)
+{
+	while (TryExtractPacket(inBuf, packet))
+	{
+		InputMemoryStream in(packet);
+		player->Deserialize(in);
+		lastX = player->X();
+		lastY = player->Y();
+		std::cout << "x: " << player->X() << " y: " << player->Y() << std::endl;
+	}
+}
+
+void Client::Render()
+{
+	window.clear(sf::Color(30, 20, 40));
+	sf::CircleShape shape(15.0f);
+	shape.setFillColor(sf::Color::White);
+	shape.setPosition(lastX, lastY);
+	window.draw(shape);
+	window.display();
 }
 
 void Client::CleanupWinsock()
