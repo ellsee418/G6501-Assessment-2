@@ -171,15 +171,11 @@ void Server::HandleDisconnects(fd_set& readSet)
 		if (n < 0)
 		{
 			std::cout << serverPrefix << " disconnected.\n";
-
 			closesocket(c);
-			std::string clientDisconnect = " disconnected.\n";
-			for (size_t j = 0; j < clients.size(); j++)
-				send(clients[j].GetSocket(), clientDisconnect.c_str(), (int)clientDisconnect.size(), 0);
 			clients.erase(clients.begin() + i);
 			i--;
 		}
-		else continue;
+		//else continue;
 	}
 }
 
